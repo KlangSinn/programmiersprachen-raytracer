@@ -110,8 +110,9 @@ Color Renderer::calculateColor(const Shape* hit_obj, glm::vec3 const& hit_point)
 		glm::vec3 n = glm::normalize(hit_obj->getNormalAt(hit_point));
 		glm::vec3 l = glm::normalize(lights_[i]->getPosition() - hit_point);
 
-
-		final_color += Ip * kd * glm::dot(n, l);
+		// Light Equation
+		if (glm::dot(n, l) > 0)
+			final_color += (Ip * kd * glm::dot(n, l));
 	}	
 	return final_color;
 }
