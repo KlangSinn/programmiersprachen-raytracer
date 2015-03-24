@@ -25,6 +25,7 @@ public:
   void render();
   void write(Pixel const& p);
   void testOutput();
+  Color calculateColor(const Shape* hit_obj, glm::vec3 const& hit_point);
 
   inline std::vector<Color> const& colorbuffer() const {
     return colorbuffer_;
@@ -40,6 +41,7 @@ private:
 
   Camera camera_;
   std::vector<Shape*> shapes_;
+  std::vector<Light*> lights_;
 };
 
 #endif // #ifndef BUW_RENDERER_HPP

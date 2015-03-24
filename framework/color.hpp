@@ -51,10 +51,21 @@ struct Color
 
 	friend Color operator-(Color const& a, Color const& b)
 	{
-	auto tmp(a);
-	tmp -= b;
-	return tmp;
-}
+		auto tmp(a);
+		tmp -= b;
+		return tmp;
+	}
+	
+	// // // // // // // // // // // // // // // // // // // // // // // // 
+
+	friend Color operator*(Color const& a, Color const& b) {
+		return Color(a.r * b.r, a.g * b.g, a.b * b.b);
+	}
+	friend Color operator*(Color const& a, float const& f) {
+		return Color(a.r * f, a.g * f, a.b * f);
+	}
+
+	// // // // // // // // // // // // // // // // // // // // // // // // 
 };
 
 #endif //#define BUW_COLOR_HPP

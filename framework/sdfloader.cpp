@@ -12,6 +12,9 @@ std::vector<Material*> SDFLoader::getMaterials() {
 std::vector<Shape*> SDFLoader::getShapes() {
 	return shapes_;
 }
+std::vector<Light*> SDFLoader::getLights() {
+	return lights_;
+}
 Camera SDFLoader::getCamera() {
 	return camera_;
 }
@@ -19,7 +22,7 @@ Camera SDFLoader::getCamera() {
 void SDFLoader::readFile(std::string file) {
 	std::ifstream ifs(file);
 	char line[256];
-	std::cout << "Start reading sdf file ..." << std::endl;
+	std::cout << "-----------------------------------\n\nStart reading sdf file ..." << std::endl;
 	if (ifs.is_open()) {
 
 		// if file was found read line per line and split it into separated words
@@ -66,9 +69,9 @@ void SDFLoader::readFile(std::string file) {
 						if (words[i + 2].compare("sphere") == 0) {
 							std::string name = words[i + 3];
 							glm::vec3 center = glm::vec3(
-								std::stof(words[i + 4]),
-								std::stof(words[i + 5]),
-								std::stof(words[i + 6])
+								std::stod(words[i + 4]),
+								std::stod(words[i + 5]),
+								std::stod(words[i + 6])
 								);
 							double radius = std::stod(words[i + 7]);
 							int found_at = -1;
@@ -79,7 +82,7 @@ void SDFLoader::readFile(std::string file) {
 							Material material;
 							if (found_at == -1) {
 								material = Material();
-								std::cout << "No material given or not found. Name of the material: " << words[i + 8] << std::endl;
+								std::cout << "Error parsing file. No material given or not found. Name of the material: " << words[i + 8] << std::endl;
 							}
 							else {
 								material = *materials_.at(found_at);
@@ -90,7 +93,7 @@ void SDFLoader::readFile(std::string file) {
 							
 						// UNKOWN SHAPE // // // // // // // // // // // // //
 						} else {
-							std::cout << "Error (in shape) parsing file" << std::endl;
+							std::cout << "Error parsing file. Unkown shape name." << std::endl;
 						}
 
 					// CAMERA // // // // // // // // // // // // // // // //
@@ -100,11 +103,34 @@ void SDFLoader::readFile(std::string file) {
 						camera_.name = name;
 						camera_.opening_angle = opening_angle;
 						i = i + 4;
+					
+					// LIGHTS // // // // // // // // // // // // // // // //
+					} else if (words[i + 1].compare("light") == 0) {
+						std::string name = words[i + 2];
+						glm::vec3 position = glm::vec3(
+							std::stod(words[i + 3]),
+							std::stod(words[i + 4]),
+							std::stod(words[i + 5])
+						);
+						Color la = Color(
+							std::stof(words[i + 6]),
+							std::stof(words[i + 7]),
+							std::stof(words[i + 8])
+						);
+						Color ld = Color(
+							std::stof(words[i + 9]),
+							std::stof(words[i + 10]),
+							std::stof(words[i + 11])
+						);
+						Light *manni = new Light(name, position, la, ld);
+						lights_.push_back(dynamic_cast<Light*>(manni));
+						i = i + 12;
 
 					// DEFINE PARAMETERS ARE MISSING // // // // // // // //
 					} else {
 						std::cout << "Error parsing file. Define parameters are missing." << std::endl;
 					}
+
 				} else {
 					i++;
 				}
@@ -113,7 +139,7 @@ void SDFLoader::readFile(std::string file) {
 	} else {
 		std::cout << "Error opening file" << std::endl;
 	}
-	std::cout << "finished reading sdf file ...\n" << std::endl;
+	std::cout << "\nFinished reading sdf file ...\n\n-----------------------------------\n" << std::endl;
 }
 
 

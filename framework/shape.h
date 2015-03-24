@@ -8,9 +8,10 @@ class Shape {
 public:
 	Shape();
 
-	virtual std::string getName() { return "Britta"; };
+	virtual std::string getName() { return "unknown"; };
 	virtual double intersect(Ray ray) { return 0.0; }
-	virtual Material getMaterial() { return Material();  }
+	virtual Material getMaterial() const { return Material();  }
+	virtual glm::vec3 getNormalAt(glm::vec3 point) const { return glm::vec3(); }
 };
 
 #endif

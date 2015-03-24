@@ -7,7 +7,7 @@
 #include <iosfwd>
 
 #include <color.hpp>
-#include <glm/glm.hpp >
+#include <glm/glm.hpp>
 
 #include "shape.h"
 
@@ -17,9 +17,10 @@ public:
 	Sphere(std::string name, glm::vec3 center, double radius, Material material);
 	~Sphere();
 
-	virtual std::string getName();
-	virtual Material getMaterial();
-	virtual double intersect(Ray ray);
+	/* virtual */ std::string getName();
+	/* virtual */ Material getMaterial() const;
+	/* virtual */ double intersect(Ray ray);
+	/* virtual */ glm::vec3 getNormalAt(glm::vec3 point) const;
 
 	glm::vec3 getCenter();
 	double getRadius();

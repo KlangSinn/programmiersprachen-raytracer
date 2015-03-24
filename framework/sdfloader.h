@@ -12,6 +12,7 @@
 #include "shape.h"
 #include "sphere.h"
 #include "camera.h"
+#include "light.h"
 
 class SDFLoader {
 public:
@@ -21,6 +22,7 @@ public:
 	void readFile(std::string file);
 	std::vector<Material*> getMaterials();
 	std::vector<Shape*> getShapes();
+	std::vector<Light*> getLights();
 	Camera getCamera();
 
 	static std::vector<std::string> splitLine(std::string line);
@@ -28,6 +30,7 @@ public:
 private:
 	std::vector<Material*> materials_;
 	std::vector<Shape*> shapes_;
+	std::vector<Light*> lights_;
 	Camera camera_;
 };
 

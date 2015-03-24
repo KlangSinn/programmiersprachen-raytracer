@@ -7,7 +7,7 @@
 #include <algorithm>
 
 Sphere::Sphere() {
-	name_ = "";
+	name_ = "unknown";
 	center_ = glm::vec3(0.0, 0.0, 0.0);
 	radius_ = 1.0;
 	material_ = Material();
@@ -24,8 +24,11 @@ glm::vec3 Sphere::getCenter() {
 double Sphere::getRadius() {
 	return radius_;
 }
-Material Sphere::getMaterial() {
+Material Sphere::getMaterial() const {
 	return material_;
+}
+glm::vec3 Sphere::getNormalAt(glm::vec3 point) const {
+	return point - center_;
 }
 
 void Sphere::setName(std::string name) {
