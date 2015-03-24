@@ -8,24 +8,32 @@
 
 #include <color.hpp>
 #include <glm/glm.hpp >
-#include "ray.h"
 
-class Sphere {
+#include "shape.h"
+
+class Sphere : public Shape {
 public:
 	Sphere();
-	Sphere(glm::vec3 center, double radius);
+	Sphere(std::string name, glm::vec3 center, double radius, Material material);
 	~Sphere();
+
+	virtual std::string getName();
+	virtual Material getMaterial();
+	virtual double intersect(Ray ray);
 
 	glm::vec3 getCenter();
 	double getRadius();
-
+	
+	void setName(std::string name);
 	void setCenter(glm::vec3 center);
 	void setRadius(double radius);
+	void setMaterial(Material material);
 
-	double intersect(Ray ray);
 private:
+	std::string name_;
 	glm::vec3 center_;
 	double radius_;
+	Material material_;
 };
 
 #endif // BUW_SPHERE_HPP

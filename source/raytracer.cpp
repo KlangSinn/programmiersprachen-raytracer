@@ -5,16 +5,15 @@
 
 int main(int argc, char* argv[]) {
 
-	std::vector<Material> materials = SDFLoader::readFile("materials.sdf");
-	for (int i = 0; i < materials.size(); ++i) {
-		std::cout << materials[i];
-	}
+	// Load scene from sdf file
+	SDFLoader sdfloader = SDFLoader();
+	sdfloader.readFile("scene.sdf");
 
 	unsigned const width = 600;
 	unsigned const height = 600;
 	std::string const filename = "./checkerboard.ppm";
 
-	Renderer app(width, height, filename);
+	Renderer app(width, height, filename, sdfloader);
 
 	std::thread thr([&app]() { app.render(); });
 

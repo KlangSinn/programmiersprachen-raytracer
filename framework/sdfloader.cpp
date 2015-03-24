@@ -3,14 +3,20 @@
 
 #include "sdfloader.h"
 
-SDFLoader::SDFLoader() {
+SDFLoader::SDFLoader() {}
+SDFLoader::~SDFLoader() {}
 
+std::vector<Material*> SDFLoader::getMaterials() {
+	return materials_;
 }
-SDFLoader::~SDFLoader() { }
+std::vector<Shape*> SDFLoader::getShapes() {
+	return shapes_;
+}
+Camera SDFLoader::getCamera() {
+	return camera_;
+}
 
-// TODO: instead of material return gernal scene objects
-std::vector<Material> SDFLoader::readFile(std::string file) {
-	std::vector<Material> materials;
+void SDFLoader::readFile(std::string file) {
 	std::ifstream ifs(file);
 	char line[256];
 	std::cout << "Start reading sdf file ..." << std::endl;
@@ -22,10 +28,15 @@ std::vector<Material> SDFLoader::readFile(std::string file) {
 
 		while (ifs.good()) {
 			ifs.getline(line, 256);
+			std::cout << line << std::endl; 
 			std::vector<std::string> words = splitLine(line);
 			int i = 0;
 			while (i < words.size()) {
+
+				// DEFINE // // // // // // // // // // // // // // // // // // // //
 				if (words[i].compare("define") == 0) {
+
+					// MATERIAL // // // // // // // // // // // // // // // // // //
 					if (words[i + 1].compare("material") == 0) {
 						std::string name = words[i + 2];
 						Color ka = Color(
@@ -44,10 +55,55 @@ std::vector<Material> SDFLoader::readFile(std::string file) {
 							std::stof(words[i + 11])
 						);
 						float m = std::stof(words[i + 12]);
-						materials.push_back(Material(name, ka, kd, ks, m));
+						static Material matti = Material(name, ka, kd, ks, m);
+						materials_.push_back(dynamic_cast<Material*>(&matti));
 						i = i + 13; 
+
+					// SHAPE // // // // // // // // // // // // // // // // // //
+					} else if (words[i + 1].compare("shape") == 0) {
+
+						// SPHERE // // // // // // // // // // // // // // // //
+						if (words[i + 2].compare("sphere") == 0) {
+							std::string name = words[i + 3];
+							glm::vec3 center = glm::vec3(
+								std::stof(words[i + 4]),
+								std::stof(words[i + 5]),
+								std::stof(words[i + 6])
+								);
+							double radius = std::stod(words[i + 7]);
+							int found_at = -1;
+							for (int j = 0; j < materials_.size() && found_at == -1; ++j) {
+								if (materials_.at(j)->getName().compare(words[i + 8]) == 0)
+									found_at = j;
+							}
+							Material material;
+							if (found_at == -1) {
+								material = Material();
+								std::cout << "No material given or not found. Name of the material: " << words[i + 8] << std::endl;
+							}
+							else {
+								material = *materials_.at(found_at);
+							}
+							static Sphere uschi = Sphere(name, center, radius, material);
+							shapes_.push_back(dynamic_cast<Sphere*>(&uschi));
+							i = i + 9;
+							
+						// UNKOWN SHAPE // // // // // // // // // // // // //
+						} else {
+							std::cout << "Error (in shape) parsing file" << std::endl;
+						}
+
+					// CAMERA // // // // // // // // // // // // // // // //
+					} else if (words[i + 1].compare("camera") == 0) {
+						std::string name = words[i + 2];
+						double opening_angle = std::stod(words[i + 3]);
+						camera_.name = name;
+						camera_.opening_angle = opening_angle;
+						i = i + 4;
+
+					// DEFINE PARAMETERS ARE MISSING // // // // // // // //
 					} else {
-						std::cout << "Error parsing file" << std::endl;
+						std::cout << "Error parsing file. Define parameters are missing." << std::endl;
 					}
 				} else {
 					i++;
@@ -56,8 +112,8 @@ std::vector<Material> SDFLoader::readFile(std::string file) {
 		}
 	} else {
 		std::cout << "Error opening file" << std::endl;
-	}	
-	return materials;
+	}
+	std::cout << "finished reading sdf file ...\n" << std::endl;
 }
 
 

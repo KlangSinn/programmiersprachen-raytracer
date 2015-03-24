@@ -6,34 +6,53 @@
 //
 // Renderer
 // -----------------------------------------------------------------------------
+#define _USE_MATH_DEFINES
 
 #include "renderer.hpp"
+#include <math.h>
 
-Renderer::Renderer(unsigned w, unsigned h, std::string const& file)
-  : width_(w)
-  , height_(h)
-  , colorbuffer_(w*h, Color(0.0, 0.0, 0.0))
-  , filename_(file)
-  , ppm_(width_, height_)
+Renderer::Renderer(unsigned w, unsigned h, std::string const& file, SDFLoader const& sdfloader) 
+	: width_(w)
+	, height_(h)
+	, colorbuffer_(w*h, Color(0.0, 0.0, 0.0))
+	, filename_(file)
+	, ppm_(width_, height_)
+	, sdfloader_(sdfloader)
 {}
 
-void Renderer::render()
-{
-  const std::size_t checkersize = 20;
+void Renderer::render() {
 
-  for (unsigned y = 0; y < height_; ++y) {
-    for (unsigned x = 0; x < width_; ++x) {
-      Pixel p(x,y);
-      /*if ( ((x/checkersize)%2) != ((y/checkersize)%2)) {
-        p.color = Color(0.0, 1.0, float(x)/height_);
-      } else {
-        p.color = Color(1.0, 0.0, float(y)/width_);
-      }*/
-	  p.color = Color(1.0,0.0,0.0);
-      write(p);
-    }
-  }
-  ppm_.save(filename_);
+	camera_ = sdfloader_.getCamera();
+	shapes_ = sdfloader_.getShapes();
+
+	camera_.position = glm::vec3(0, 0, tan((90 - camera_.opening_angle / 2) * M_PI / 180) * (width_ / 2));
+
+	testOutput(); // output all scene objects and parameters
+
+	Ray prim_ray;
+	for (unsigned y = 0; y < height_; ++y) {
+		for (unsigned x = 0; x < width_; ++x) {
+			Pixel p(x,y);
+
+			//																					 CREATE RAY
+			// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
+			glm::vec3 pointOnImagePlane = glm::vec3((double) x - width_ / 2, (double) y - height_ / 2, 0);
+			prim_ray.origin = camera_.position;
+			prim_ray.direction = pointOnImagePlane - camera_.position;
+
+			p.color = Color(0.0,0.0,0.0);
+
+			for (int i = 0; i < shapes_.size(); ++i) {
+				double d = shapes_[i]->intersect(prim_ray);
+				if (d != -1) {
+					p.color = Color(1.0, 0.0, 0.0);
+				}
+			}
+
+			write(p);
+		}
+	}
+	ppm_.save(filename_);
 }
 
 void Renderer::write(Pixel const& p)
@@ -50,4 +69,12 @@ void Renderer::write(Pixel const& p)
   }
 
   ppm_.write(p);
+}
+
+void Renderer::testOutput() {
+	std::cout << "Objekte der Szene" << std::endl;
+	for (int i = 0; i < shapes_.size(); ++i) {
+		std::cout << "Objekt: " << shapes_[i]->getName() << std::endl;
+	}
+	std::cout << "Camera: " << camera_.name << " | Focal Length: " << camera_.position.z << std::endl;
 }
