@@ -55,8 +55,8 @@ void SDFLoader::readFile(std::string file) {
 							std::stof(words[i + 11])
 						);
 						float m = std::stof(words[i + 12]);
-						static Material matti = Material(name, ka, kd, ks, m);
-						materials_.push_back(dynamic_cast<Material*>(&matti));
+						Material *matti = new Material(name, ka, kd, ks, m);
+						materials_.push_back(dynamic_cast<Material*>(matti));
 						i = i + 13; 
 
 					// SHAPE // // // // // // // // // // // // // // // // // //
@@ -84,8 +84,8 @@ void SDFLoader::readFile(std::string file) {
 							else {
 								material = *materials_.at(found_at);
 							}
-							static Sphere uschi = Sphere(name, center, radius, material);
-							shapes_.push_back(dynamic_cast<Sphere*>(&uschi));
+							Sphere *uschi = new Sphere(name, center, radius, material);
+							shapes_.push_back(dynamic_cast<Sphere*>(uschi));
 							i = i + 9;
 							
 						// UNKOWN SHAPE // // // // // // // // // // // // //

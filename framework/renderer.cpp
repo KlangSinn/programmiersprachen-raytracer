@@ -34,8 +34,7 @@ void Renderer::render() {
 		for (unsigned x = 0; x < width_; ++x) {
 			Pixel p(x,y);
 
-			//																					 CREATE RAY
-			// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
+			// create ray
 			glm::vec3 pointOnImagePlane = glm::vec3((double) x - width_ / 2, (double) y - height_ / 2, 0);
 			prim_ray.origin = camera_.position;
 			prim_ray.direction = pointOnImagePlane - camera_.position;
@@ -45,7 +44,7 @@ void Renderer::render() {
 			for (int i = 0; i < shapes_.size(); ++i) {
 				double d = shapes_[i]->intersect(prim_ray);
 				if (d != -1) {
-					p.color = Color(1.0, 0.0, 0.0);
+					p.color = shapes_[i]->getMaterial().getKA();
 				}
 			}
 
@@ -72,6 +71,11 @@ void Renderer::write(Pixel const& p)
 }
 
 void Renderer::testOutput() {
+	/*std::vector<Material*> materials = sdfloader_.getMaterials();
+	for (int i = 0; i < materials.size(); ++i) {
+		std::cout << *materials[i] << std::endl;
+	}*/
+
 	std::cout << "Objekte der Szene" << std::endl;
 	for (int i = 0; i < shapes_.size(); ++i) {
 		std::cout << "Objekt: " << shapes_[i]->getName() << std::endl;
