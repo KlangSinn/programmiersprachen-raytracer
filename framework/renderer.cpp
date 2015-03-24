@@ -121,8 +121,13 @@ Color Renderer::calculateColor(const Shape* hit_obj, glm::vec3 const& hit_point)
 			diffuse_light = Color(0.0, 0.0, 0.0);
 		}
 
+		// Ambient Light
+		Color Ia = lights_[i]->getLA();
+		Color ka = hit_obj->getMaterial().getKA();
+		Color ambient_light = Ia * ka;
+
 		// Lightning Equation
-		final_color += diffuse_light;
+		final_color += diffuse_light + ambient_light;
 	}	
 	return final_color;
 }
