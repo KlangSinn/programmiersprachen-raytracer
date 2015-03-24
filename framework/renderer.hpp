@@ -26,6 +26,7 @@ public:
   void write(Pixel const& p);
   void testOutput();
   Color calculateColor(const Shape* hit_obj, glm::vec3 const& hit_point);
+  bool isInShadow(Ray sec_ray);
 
   inline std::vector<Color> const& colorbuffer() const {
     return colorbuffer_;

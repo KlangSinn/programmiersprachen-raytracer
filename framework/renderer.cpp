@@ -104,15 +104,34 @@ Color Renderer::calculateColor(const Shape* hit_obj, glm::vec3 const& hit_point)
 	Color final_color = Color(0.0, 0.0, 0.0);
 	for (int i = 0; i < lights_.size(); ++i) {
 
-		// Diffuse Light Parameter
-		Color Ip = lights_[i]->getLD();
-		Color kd = hit_obj->getMaterial().getKD();
-		glm::vec3 n = glm::normalize(hit_obj->getNormalAt(hit_point));
-		glm::vec3 l = glm::normalize(lights_[i]->getPosition() - hit_point);
+		// normal at hit point and direction to light source
+		glm::vec3 n = hit_obj->getNormalAt(hit_point);
+		glm::vec3 l = lights_[i]->getPosition() - hit_point;
+		
+		// Ray to light source
+		Ray sec_ray = Ray(hit_point, l);
 
-		// Light Equation
-		if (glm::dot(n, l) > 0)
-			final_color += (Ip * kd * glm::dot(n, l));
+		// Diffuse Light
+		Color diffuse_light;
+		if (!isInShadow(sec_ray) && glm::dot(glm::normalize(n), glm::normalize(l)) > 0) {
+			Color Ip = lights_[i]->getLD();
+			Color kd = hit_obj->getMaterial().getKD();			
+			diffuse_light = (Ip * kd * glm::dot(glm::normalize(n), glm::normalize(l)));
+		} else {
+			diffuse_light = Color(0.0, 0.0, 0.0);
+		}
+
+		// Lightning Equation
+		final_color += diffuse_light;
 	}	
 	return final_color;
+}
+
+bool Renderer::isInShadow(Ray sec_ray) {
+	for (int i = 0; i < shapes_.size(); ++i) {
+		double d = shapes_[i]->intersect(sec_ray);
+		if (d > 0 && d < 1)
+			return true;
+	}
+	return false;
 }
