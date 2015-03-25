@@ -90,8 +90,34 @@ void SDFLoader::readFile(std::string file) {
 							Sphere *uschi = new Sphere(name, center, radius, material);
 							shapes_.push_back(dynamic_cast<Sphere*>(uschi));
 							i = i + 9;
+
+						// PLANE // // // // // // // // // // // // // // // //
+						} else if (words[i + 2].compare("plane") == 0) {
+							std::string name = words[i + 3];
+							glm::vec3 normal = glm::vec3(
+								std::stod(words[i + 4]),
+								std::stod(words[i + 5]),
+								std::stod(words[i + 6])
+								);
+							double d = std::stod(words[i + 7]);
+							int found_at = -1;
+							for (int j = 0; j < materials_.size() && found_at == -1; ++j) {
+								if (materials_.at(j)->getName().compare(words[i + 8]) == 0)
+									found_at = j;
+							}
+							Material material;
+							if (found_at == -1) {
+								material = Material();
+								std::cout << "Error parsing file. No material given or not found. Name of the material: " << words[i + 8] << std::endl;
+							}
+							else {
+								material = *materials_.at(found_at);
+							}
+							Plane *globbi = new Plane(name, normal, d, material);
+							shapes_.push_back(dynamic_cast<Plane*>(globbi));
+							i = i + 9;
 							
-						// UNKOWN SHAPE // // // // // // // // // // // // //
+						// UNKOWN SHAPE // // // // // // // // // // // // // 
 						} else {
 							std::cout << "Error parsing file. Unkown shape name." << std::endl;
 						}

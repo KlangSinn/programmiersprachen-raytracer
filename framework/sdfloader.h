@@ -11,6 +11,7 @@
 #include "material.h"
 #include "shape.h"
 #include "sphere.h"
+#include "plane.h"
 #include "camera.h"
 #include "light.h"
 

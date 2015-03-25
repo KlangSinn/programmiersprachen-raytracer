@@ -86,10 +86,6 @@ void Renderer::write(Pixel const& p)
 }
 
 void Renderer::testOutput() {
-//	std::vector<Material*> materials = sdfloader_.getMaterials();
-//	for (int i = 0; i < materials.size(); ++i) {
-//		std::cout << *materials[i] << std::endl;
-//	}
 	std::cout << "Objekte der Szene" << std::endl;
 	for (int i = 0; i < shapes_.size(); ++i) {
 		std::cout << "Objekt: " << shapes_[i]->getName() << std::endl;
