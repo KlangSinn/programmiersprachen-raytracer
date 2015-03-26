@@ -74,19 +74,7 @@ void SDFLoader::readFile(std::string file) {
 								std::stod(words[i + 6])
 								);
 							double radius = std::stod(words[i + 7]);
-							int found_at = -1;
-							for (int j = 0; j < materials_.size() && found_at == -1; ++j) {
-								if (materials_.at(j)->getName().compare(words[i + 8]) == 0)
-									found_at = j;
-							}
-							Material material;
-							if (found_at == -1) {
-								material = Material();
-								std::cout << "Error parsing file. No material given or not found. Name of the material: " << words[i + 8] << std::endl;
-							}
-							else {
-								material = *materials_.at(found_at);
-							}
+							Material material = findMaterialByName(words[i + 8]);
 							Sphere *uschi = new Sphere(name, center, radius, material);
 							shapes_.push_back(dynamic_cast<Sphere*>(uschi));
 							i = i + 9;
@@ -100,23 +88,29 @@ void SDFLoader::readFile(std::string file) {
 								std::stod(words[i + 6])
 								);
 							double d = std::stod(words[i + 7]);
-							int found_at = -1;
-							for (int j = 0; j < materials_.size() && found_at == -1; ++j) {
-								if (materials_.at(j)->getName().compare(words[i + 8]) == 0)
-									found_at = j;
-							}
-							Material material;
-							if (found_at == -1) {
-								material = Material();
-								std::cout << "Error parsing file. No material given or not found. Name of the material: " << words[i + 8] << std::endl;
-							}
-							else {
-								material = *materials_.at(found_at);
-							}
+							Material material = findMaterialByName(words[i + 8]);
 							Plane *globbi = new Plane(name, normal, d, material);
 							shapes_.push_back(dynamic_cast<Plane*>(globbi));
 							i = i + 9;
-							
+
+						// BOX // // // // // // // // // // // // // // // //
+						} else if (words[i + 2].compare("box") == 0) {
+							std::string name = words[i + 3];
+							glm::vec3 p0 = glm::vec3(
+								std::stod(words[i + 4]),
+								std::stod(words[i + 5]),
+								std::stod(words[i + 6])
+								);
+							glm::vec3 p1 = glm::vec3(
+								std::stod(words[i + 7]),
+								std::stod(words[i + 8]),
+								std::stod(words[i + 9])
+								);
+							Material material = findMaterialByName(words[i + 10]);
+							Box *kuchen = new Box(name, p0, p1, material);
+							shapes_.push_back(dynamic_cast<Box*>(kuchen));
+							i = i + 11;
+
 						// UNKOWN SHAPE // // // // // // // // // // // // // 
 						} else {
 							std::cout << "Error parsing file. Unkown shape name." << std::endl;
@@ -168,6 +162,26 @@ void SDFLoader::readFile(std::string file) {
 	std::cout << "\nFinished reading sdf file ...\n\n-----------------------------------\n" << std::endl;
 }
 
+// // // // // // // // // // // // // // // // // // // // // // // // 
+
+Material SDFLoader::findMaterialByName(std::string name) {
+	int found_at = -1;
+	for (int j = 0; j < materials_.size() && found_at == -1; ++j) {
+		if (materials_.at(j)->getName().compare(name) == 0)
+			found_at = j;
+	}
+	Material material;
+	if (found_at == -1) {
+		material = Material();
+		std::cout << "Error parsing file. No material given or not found. Name of the material: " << name << std::endl;
+	}
+	else {
+		material = *materials_.at(found_at);
+	}
+	return material;
+}
+
+// // // // // // // // // // // // // // // // // // // // // // // // 
 
 std::vector<std::string> SDFLoader::splitLine(std::string line) {
 	std::vector<std::string> words;

@@ -7,7 +7,7 @@
 #include <algorithm>
 
 Sphere::Sphere() {
-	name_ = "unknown";
+	name_ = "";
 	center_ = glm::vec3(0.0, 0.0, 0.0);
 	radius_ = 1.0;
 	material_ = Material();

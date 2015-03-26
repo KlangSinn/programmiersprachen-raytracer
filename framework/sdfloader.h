@@ -12,6 +12,7 @@
 #include "shape.h"
 #include "sphere.h"
 #include "plane.h"
+#include "box.h"
 #include "camera.h"
 #include "light.h"
 
@@ -25,6 +26,7 @@ public:
 	std::vector<Shape*> getShapes();
 	std::vector<Light*> getLights();
 	Camera getCamera();
+	Material findMaterialByName(std::string name);
 
 	static std::vector<std::string> splitLine(std::string line);
 
