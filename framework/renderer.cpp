@@ -59,7 +59,7 @@ void Renderer::render() {
 				p.color = Color(0.0, 0.0, 0.0);
 			} else {
 				glm::vec3 hit_point = prim_ray.origin + (float) delta * prim_ray.direction;
-				p.color = calculateColor(closest_obj, hit_point);
+				p.color = calculateColor(closest_obj, hit_point, prim_ray);
 			}
 
 			// draw pixel
@@ -96,35 +96,54 @@ void Renderer::testOutput() {
 	std::cout << "Camera: " << camera_.name << " | Focal Length: " << camera_.position.z << std::endl;
 }
 
-Color Renderer::calculateColor(const Shape* hit_obj, glm::vec3 const& hit_point) {
-	Color final_color = Color(0.0, 0.0, 0.0);
+Color Renderer::calculateColor(const Shape* hit_obj, glm::vec3 const& hit_point, Ray const& prim_ray) {
+	Color final_color = Color(0.0, 0.0, 0.0);	
+
 	for (int i = 0; i < lights_.size(); ++i) {
 
 		// normal at hit point and direction to light source
 		glm::vec3 n = hit_obj->getNormalAt(hit_point);
 		glm::vec3 l = lights_[i]->getPosition() - hit_point;
-		
-		// Ray to light source
+
+		// ray to lightsource
 		Ray sec_ray = Ray(hit_point, l);
 
-		// Diffuse Light
+		// Diffuse and Specular Light
 		Color diffuse_light;
+		Color specular_light;
 		if (!isInShadow(sec_ray) && glm::dot(glm::normalize(n), glm::normalize(l)) > 0) {
+	
+			// Diffuse Light
 			Color Ip = lights_[i]->getLD();
 			Color kd = hit_obj->getMaterial().getKD();			
 			diffuse_light = (Ip * kd * glm::dot(glm::normalize(n), glm::normalize(l)));
+
+			// Specular Light
+			glm::vec3 r = 2 * glm::dot(glm::normalize(n), glm::normalize(l)) * glm::normalize(n) - glm::normalize(l);
+			glm::vec3 v = glm::normalize(prim_ray.direction);
+			v *= -1;
+			if (glm::dot(r, v) > 0) {
+				double m = hit_obj->getMaterial().getM();
+				Color ks = hit_obj->getMaterial().getKS();
+				specular_light = ks * pow(glm::dot(r, v), m);
+			} else {
+				specular_light = Color(0.0, 0.0, 0.0);
+			}
 		} else {
+
+			// is in shadow
 			diffuse_light = Color(0.0, 0.0, 0.0);
-		}
-
-		// Ambient Light
-		Color Ia = lights_[i]->getLA();
-		Color ka = hit_obj->getMaterial().getKA();
-		Color ambient_light = Ia * ka;
-
-		// Lightning Equation
-		final_color += diffuse_light + ambient_light;
+			specular_light = Color(0.0, 0.0, 0.0);
+		}					
+		final_color += diffuse_light + specular_light;
 	}	
+
+	// Ambient Light
+	Color Ia = lights_[0]->getLA();
+	Color ka = hit_obj->getMaterial().getKA();
+	Color ambient_light = Ia * ka;
+	final_color += ambient_light;
+
 	return final_color;
 }
 
