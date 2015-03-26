@@ -10,11 +10,12 @@
 #include <glm/glm.hpp>
 
 #include "shape.h"
+#include "plane.h"
 
 class Box : public Shape {
 public:
 	Box();
-	Box(std::string name, glm::vec3 p1, glm::vec3 p2, Material material);
+	Box(std::string name, glm::vec3 pmin, glm::vec3 pmax, Material material);
 	~Box();
 
 	/* virtual */ std::string getName();
@@ -22,18 +23,18 @@ public:
 	/* virtual */ double intersect(Ray ray);
 	/* virtual */ glm::vec3 getNormalAt(glm::vec3 point) const;
 
-	glm::vec3 getP1();
-	glm::vec3 getP2();
+	glm::vec3 getPMin();
+	glm::vec3 getPMax();
 
 	void setName(std::string name);
-	void setP1(glm::vec3 p1);
-	void setP2(glm::vec3 p2);
+	void setPMin(glm::vec3 pmin);
+	void setPMax(glm::vec3 pmax);
 	void setMaterial(Material material);
 
 private:
 	std::string name_;
-	glm::vec3 p1_;
-	glm::vec3 p2_;
+	glm::vec3 pmin_;
+	glm::vec3 pmax_;
 	Material material_;
 };
 

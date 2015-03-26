@@ -37,6 +37,10 @@ double Plane::intersect(Ray ray) {
 
 // // // // // // // // // // // // // // // // // // // // // // 
 
+bool Plane::isInPlane(glm::vec3 point) {
+	return (normal_.x * point.x + normal_.y * point.y + normal_.z * point.z) == d_;
+}
+
 // GETTER
 std::string Plane::getName() {
 	return name_;

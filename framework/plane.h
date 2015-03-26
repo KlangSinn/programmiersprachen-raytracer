@@ -22,6 +22,8 @@ public:
 	/* virtual */ double intersect(Ray ray);
 	/* virtual */ glm::vec3 getNormalAt(glm::vec3 point) const;
 
+	bool isInPlane(glm::vec3 point);
+
 	double getD();
 
 	void setName(std::string name);
