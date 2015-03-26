@@ -30,6 +30,7 @@ public:
 	void setRadius(double radius);
 	void setMaterial(Material material);
 
+
 private:
 	std::string name_;
 	glm::vec3 center_;
