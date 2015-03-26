@@ -66,9 +66,9 @@ double Box::intersect(Ray ray) {
 		if (!(p_right.y < pmax_.y && p_right.y > pmin_.y && p_right.z < pmin_.z && p_right.z > pmax_.z))
 			ts[5] = -1;
 	}
-	float final_t = -1;
+	double final_t = -1;
 	for (int i = 0; i < 6; ++i) {
-		if (ts[i] > 1 && (ts[i] < final_t || final_t == -1))
+		if (ts[i] > 0 && (ts[i] < final_t || final_t == -1))
 			final_t = ts[i];
 	}
 
